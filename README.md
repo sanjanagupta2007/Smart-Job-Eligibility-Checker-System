@@ -110,3 +110,7 @@ Open your web browser and go to:
 - **Skills (35 pts)**: Data Structures (8 pts), Python (5 pts), Java (5 pts), SQL (5 pts), C++ (4 pts), HTML/CSS (3 pts), JavaScript (3 pts), Machine Learning (2 pts)
 - **Projects (15 pts)**: 1 Project = 5 pts, 2 Projects = 10 pts, 3+ Projects = 15 pts
 - **Internships (15 pts)**: Yes = 15 pts, No = 0 pts
+
+git add .
+git commit -m "Updated README"
+git push
