@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Job Eligibility Checker System</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --sidebar-hover: #1e293b;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent-indigo: #6366f1;
+            --accent-indigo-hover: #4f46e5;
+            --accent-teal: #0d9488;
+            --accent-teal-hover: #0f766e;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            
+            --success-bg: #ecfdf5;
+            --success-text: #047857;
+            --success-border: #a7f3d0;
+            
+            --danger-bg: #fef2f2;
+            --danger-text: #b91c1c;
+            --danger-border: #fecaca;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        aside {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            background: linear-gradient(135deg, #818cf8, #2dd4bf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 20px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--sidebar-hover);
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--accent-indigo), #4f46e5);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #1e293b;
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        /* Main Content Container */
+        main {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 1400px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .welcome-section h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .welcome-section p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .current-student-badge {
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #c7d2fe;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        /* Dashboard Overview Cards */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .kpi-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-title {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-icon {
+            font-size: 22px;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .icon-blue { background-color: #eff6ff; color: #2563eb; }
+        .icon-indigo { background-color: #e0e7ff; color: #4f46e5; }
+        .icon-teal { background-color: #f0fdf4; color: #0d9488; }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .kpi-description {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: -4px;
+        }
+
+        /* Tab Content Control */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* General Panel Layouts */
+        .panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid var(--accent-indigo);
+            padding-left: 12px;
+        }
+
+        /* Charts Section */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 24px;
+        }
+
+        .chart-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .no-data-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px;
+        }
+
+        .no-data-placeholder svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            stroke: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        /* Eligibility Forms Styling */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: #ffffff;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .checkbox-item input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-indigo);
+        }
+
+        .checkbox-item.checked {
+            background-color: #e0e7ff;
+            border-color: #a5b4fc;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 4px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-item input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-indigo);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-indigo);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-indigo-hover);
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+        /* Results Tab Grid */
+        .company-results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .company-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .company-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .company-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+        }
+
+        .company-card.eligible::before {
+            background-color: var(--accent-teal);
+        }
+
+        .company-card.ineligible::before {
+            background-color: #ef4444;
+        }
+
+        .company-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .company-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-eligible {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid var(--success-border);
+        }
+
+        .status-ineligible {
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+            border: 1px solid var(--danger-border);
+        }
+
+        .company-details-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .company-details-list li {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .company-details-list strong {
+            color: var(--text-main);
+        }
+
+        .rejection-reasons {
+            background-color: #fff5f5;
+            border: 1px dashed #fecaca;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            color: #b91c1c;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .rejection-reasons div {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* Recommendations Section Styling */
+        .recs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .recs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .rec-item-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rec-badge-icon {
+            font-size: 24px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background-color: #f1f5f9;
+        }
+
+        .rec-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .rec-list {
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rec-list li {
+            line-height: 1.4;
+        }
+
+        .text-report-view {
+            width: 100%;
+            height: 350px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #1e293b;
+            color: #f8fafc;
+            resize: none;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        /* Students Database Table styling */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .score-indicator-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .badge-green { background-color: #d1fae5; color: #065f46; }
+        .badge-yellow { background-color: #fef3c7; color: #92400e; }
+        .badge-red { background-color: #fee2e2; color: #991b1b; }
+
+        .btn-table {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .btn-table:hover {
+            background-color: var(--accent-indigo);
+            color: #ffffff;
+            border-color: var(--accent-indigo);
+        }
+
+        /* Error/Info Alerts */
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+            border: 1px solid var(--danger-border);
+        }
+
+        .alert-success {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid var(--success-border);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside>
+        <div class="logo-container">
+            <span class="logo-icon">🎓</span>
+            <span class="logo-text">SmartPlacements</span>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active" onclick="switchTab('dashboard')">
+                <span class="nav-icon">📊</span> Dashboard
+            </li>
+            <li class="nav-item" onclick="switchTab('eligibility')">
+                <span class="nav-icon">✏️</span> Check Eligibility
+            </li>
+            <li class="nav-item" onclick="switchTab('companies')">
+                <span class="nav-icon">🏢</span> Company Criteria
+            </li>
+            <li class="nav-item" onclick="switchTab('recommendations')">
+                <span class="nav-icon">💡</span> Skill Gap & Tips
+            </li>
+            <li class="nav-item" onclick="switchTab('database')">
+                <span class="nav-icon">🗄️</span> Peer Directory
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            Smart Placement Checker v1.0
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main>
+        <header>
+            <div class="welcome-section">
+                <h1 id="page-title">Placement Analytics</h1>
+                <p id="page-subtitle">Interactive overview of placement readiness & core metrics</p>
+            </div>
+            <div class="current-student-badge" id="student-badge">
+                👤 No Active Student
+            </div>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Employability Score</span>
+                    <span class="kpi-icon icon-indigo">📈</span>
+                </div>
+                <div class="kpi-value" id="kpi-score">--</div>
+                <div class="kpi-description">Out of 100 points</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Eligible Companies</span>
+                    <span class="kpi-icon icon-teal">🏢</span>
+                </div>
+                <div class="kpi-value" id="kpi-eligible">--</div>
+                <div class="kpi-description" id="kpi-eligible-sub">Select/check a profile</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Readiness Rating</span>
+                    <span class="kpi-icon icon-blue">🎯</span>
+                </div>
+                <div class="kpi-value" id="kpi-readiness">--</div>
+                <div class="kpi-description" id="kpi-readiness-sub">Eligibility ratio</div>
+            </div>
+        </div>
+
+        <!-- Notification Banner -->
+        <div id="alert-banner" style="display: none;"></div>
+
+        <!-- TAB CONTENT: DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="dashboard-grid" id="dashboard-charts-grid">
+                <!-- If no student calculated, show placeholder -->
+                <div class="panel" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;" id="dashboard-placeholder">
+                    <div class="no-data-placeholder">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                        </svg>
+                        <h2>No Student Data Loaded</h2>
+                        <p style="margin-top: 10px;">Please use the <strong>Check Eligibility</strong> form to enter student details or select an existing record from the <strong>Peer Directory</strong> tab.</p>
+                        <button class="btn btn-primary" style="margin-top: 20px;" onclick="switchTab('eligibility')">Go to Form</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hidden containers for loaded charts -->
+            <div class="dashboard-grid" id="active-charts-container" style="display: none;">
+                <div class="chart-panel">
+                    <h3 style="font-size: 15px; margin-bottom: 15px; color: var(--text-main);">Company Eligibility</h3>
+                    <img id="chart-eligibility" class="chart-img" alt="Eligibility Donut">
+                </div>
+                <div class="chart-panel">
+                    <h3 style="font-size: 15px; margin-bottom: 15px; color: var(--text-main);">Employability Score Breakdown</h3>
+                    <img id="chart-score" class="chart-img" alt="Score Breakdown">
+                </div>
+                <div class="chart-panel" style="grid-column: 1 / -1; width: 100%;">
+                    <h3 style="font-size: 15px; margin-bottom: 15px; color: var(--text-main);">Technical Skill Distribution (vs Cohort)</h3>
+                    <img id="chart-peers" class="chart-img" alt="Skill Distribution">
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: ELIGIBILITY CHECK FORM -->
+        <div id="tab-eligibility" class="tab-content">
+            <div class="panel">
+                <div class="panel-title">Enter Student Credentials</div>
+                <form id="student-form" onsubmit="handleFormSubmit(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" class="form-control" placeholder="e.g., Alice Smith" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="branch">Engineering Branch</label>
+                            <select id="branch" class="form-control">
+                                <option value="CSE">Computer Science & Engineering (CSE)</option>
+                                <option value="ECE">Electronics & Communication (ECE)</option>
+                                <option value="IT">Information Technology (IT)</option>
+                                <option value="EEE">Electrical & Electronics (EEE)</option>
+                                <option value="ME">Mechanical Engineering (ME)</option>
+                                <option value="CE">Civil Engineering (CE)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="gradYear">Graduation Year</label>
+                            <input type="number" id="gradYear" class="form-control" min="2020" max="2035" value="2026" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cgpa">Current CGPA (0.0 - 10.0)</label>
+                            <input type="number" id="cgpa" class="form-control" min="0" max="10" step="0.01" placeholder="e.g., 8.2" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tenPercent">10th Percentage (0 - 100)</label>
+                            <input type="number" id="tenPercent" class="form-control" min="0" max="100" step="0.1" placeholder="e.g., 90.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="twelvePercent">12th Percentage (0 - 100)</label>
+                            <input type="number" id="twelvePercent" class="form-control" min="0" max="100" step="0.1" placeholder="e.g., 88.0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Active Backlogs</label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" name="backlogs" value="No" checked> No
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="backlogs" value="Yes"> Yes
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Completed Internships</label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" name="internship" value="No" checked> No
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="internship" value="Yes"> Yes
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label for="projectsCount">Number of Academic/Personal Projects</label>
+                            <input type="number" id="projectsCount" class="form-control" min="0" max="20" value="0" required>
+                        </div>
+                        
+                        <!-- Skills Selection -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Technical Skills Matrix</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item" id="chk-lbl-ds">
+                                    <input type="checkbox" id="skill-ds" value="Data Structures" onchange="toggleCheckStyle(this)"> Data Structures
+                                </label>
+                                <label class="checkbox-item" id="chk-lbl-python">
+                                    <input type="checkbox" id="skill-python" value="Python" onchange="toggleCheckStyle(this)"> Python
+                                </label>
+                                <label class="checkbox-item" id="chk-lbl-java">
+                                    <input type="checkbox" id="skill-java" value="Java" onchange="toggleCheckStyle(this)"> Java
+                                </label>
+                                <label class="checkbox-item" id="chk-lbl-sql">
+                                    <input type="checkbox" id="skill-sql" value="SQL" onchange="toggleCheckStyle(this)"> SQL
+                                </label>
+                                <label class="checkbox-item" id="chk-lbl-cpp">
+                                    <input type="checkbox" id="skill-cpp" value="C++" onchange="toggleCheckStyle(this)"> C++
+                                </label>
+                                <label class="checkbox-item" id="chk-lbl-html">
+                                    <input type="checkbox" id="skill-html" value="HTML/CSS" onchange="toggleCheckStyle(this)"> HTML/CSS
+                                </label>
+                                <label class="checkbox-item" id="chk-lbl-js">
+                                    <input type="checkbox" id="skill-js" value="JavaScript" onchange="toggleCheckStyle(this)"> JavaScript
+                                </label>
+                                <label class="checkbox-item" id="chk-lbl-ml">
+                                    <input type="checkbox" id="skill-ml" value="Machine Learning" onchange="toggleCheckStyle(this)"> Machine Learning
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" onclick="resetStudentForm()">Reset Profile</button>
+                        <button type="submit" class="btn btn-primary" id="submit-btn">Run Assessment</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Results Pane inside form tab -->
+            <div id="form-results-panel" class="panel" style="display: none;">
+                <div class="panel-title">Assessment Results</div>
+                <div class="company-results-grid" id="form-results-grid"></div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: COMPANY CRITERIA -->
+        <div id="tab-companies" class="tab-content">
+            <div class="panel">
+                <div class="panel-title">Company Criteria Matrix</div>
+                <div class="company-results-grid" id="companies-matrix-grid">
+                    <!-- Loaded dynamically via API -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: RECOMMENDATIONS & REPORTS -->
+        <div id="tab-recommendations" class="tab-content">
+            <div id="recs-placeholder" class="panel" style="text-align: center; padding: 40px;">
+                <p class="no-data-placeholder">Perform an assessment to generate custom gap analysis & learning tips.</p>
+            </div>
+            <div id="recs-container" style="display: none;">
+                <div class="recs-grid">
+                    <div class="rec-item-card">
+                        <div class="rec-badge-icon">🎯</div>
+                        <div class="rec-card-title">Priority Improvements</div>
+                        <ul class="rec-list" id="rec-improvements"></ul>
+                    </div>
+                    <div class="rec-item-card">
+                        <div class="rec-badge-icon">📖</div>
+                        <div class="rec-card-title">Skills to Acquire</div>
+                        <ul class="rec-list" id="rec-skills"></ul>
+                    </div>
+                    <div class="rec-item-card">
+                        <div class="rec-badge-icon">🏅</div>
+                        <div class="rec-card-title">Recommended Certs</div>
+                        <ul class="rec-list" id="rec-certs"></ul>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-top: 24px;">
+                    <div class="panel-title" style="margin-bottom: 15px;">Placement Eligibility Report</div>
+                    <textarea class="text-report-view" id="report-view-box" readonly></textarea>
+                    <div class="button-group" style="margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="downloadPlacementReport()">Download Placement Report (.txt)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: STUDENT DIRECTORY -->
+        <div id="tab-database" class="tab-content">
+            <div class="panel">
+                <div class="panel-title">Peer Directory database</div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Branch</th>
+                                <th>CGPA</th>
+                                <th>Backlogs</th>
+                                <th>Skills Count</th>
+                                <th>Projects</th>
+                                <th>Internship</th>
+                                <th>Employability Score</th>
+                                <th>Readiness</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-table-body">
+                            <!-- Loaded dynamically via API -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- UI Logic Script -->
+    <script>
+        // Store current calculated student data
+        let currentStudentData = null;
+
+        // Switch Sidebar Tabs
+        function switchTab(tabId) {
+            // Remove active classes
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Set page header content
+            const title = document.getElementById('page-title');
+            const subtitle = document.getElementById('page-subtitle');
+            
+            if (tabId === 'dashboard') {
+                title.innerText = 'Placement Analytics';
+                subtitle.innerText = 'Interactive overview of placement readiness & core metrics';
+                // Active sidebar link
+                document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+                document.getElementById('tab-dashboard').classList.add('active');
+            } else if (tabId === 'eligibility') {
+                title.innerText = 'Assess Credentials';
+                subtitle.innerText = 'Check eligibility parameters against company norms';
+                document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+                document.getElementById('tab-eligibility').classList.add('active');
+            } else if (tabId === 'companies') {
+                title.innerText = 'Target Recruiters';
+                subtitle.innerText = 'Criteria & specifications catalog';
+                document.querySelector('.nav-item:nth-child(3)').classList.add('active');
+                document.getElementById('tab-companies').classList.add('active');
+                loadCompaniesMatrix();
+            } else if (tabId === 'recommendations') {
+                title.innerText = 'Skill Gap & Recommendations';
+                subtitle.innerText = 'Personalized learning pathways & cert suggestions';
+                document.querySelector('.nav-item:nth-child(4)').classList.add('active');
+                document.getElementById('tab-recommendations').classList.add('active');
+            } else if (tabId === 'database') {
+                title.innerText = 'Peer Assessment Directory';
+                subtitle.innerText = 'Saved student metrics catalog';
+                document.querySelector('.nav-item:nth-child(5)').classList.add('active');
+                document.getElementById('tab-database').classList.add('active');
+                loadStudentDirectory();
+            }
+        }
+
+        // Toggle checkbox highlight styling
+        function toggleCheckStyle(checkbox) {
+            const label = checkbox.parentElement;
+            if (checkbox.checked) {
+                label.classList.add('checked');
+            } else {
+                label.classList.remove('checked');
+            }
+        }
+
+        // Display Alerts
+        function showAlert(message, type = 'success') {
+            const banner = document.getElementById('alert-banner');
+            banner.className = `alert alert-${type}`;
+            banner.innerHTML = message;
+            banner.style.display = 'flex';
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 5000);
+        }
+
+        // Reset Student Assessment Form
+        function resetStudentForm() {
+            document.getElementById('student-form').reset();
+            document.querySelectorAll('.checkbox-item').forEach(label => {
+                label.classList.remove('checked');
+                label.querySelector('input').checked = false;
+            });
+            document.getElementById('form-results-panel').style.display = 'none';
+        }
+
+        // Fetch list of company criteria and render
+        function loadCompaniesMatrix() {
+            fetch('/api/companies')
+                .then(res => res.json())
+                .then(data => {
+                    const grid = document.getElementById('companies-matrix-grid');
+                    grid.innerHTML = '';
+                    
+                    data.forEach(comp => {
+                        const card = document.createElement('div');
+                        card.className = 'company-card';
+                        // Add border color decoration
+                        card.style.borderColor = '#e2e8f0';
+                        
+                        let skillsTxt = comp.RequiredSkills || 'None';
+                        if (comp.RequiredSkills && comp.SkillsOperator) {
+                            skillsTxt += ` (${comp.SkillsOperator} combination)`;
+                        }
+
+                        card.innerHTML = `
+                            <div class="company-card-header">
+                                <div class="company-name">${comp.Company}</div>
+                                <span class="status-badge" style="background-color:#eff6ff; color:#2563eb; border:1px solid #bfdbfe;">Active</span>
+                            </div>
+                            <ul class="company-details-list">
+                                <li><span>Min CGPA:</span> <strong>${comp.MinCGPA}</strong></li>
+                                <li><span>Backlogs:</span> <strong>${comp.MaxBacklogs === 0 ? 'No Backlogs' : 'Allowed'}</strong></li>
+                                <li><span>Projects:</span> <strong>${comp.MinProjects} minimum</strong></li>
+                                <li><span>Required Skills:</span> <strong style="text-align:right;">${skillsTxt}</strong></li>
+                            </ul>
+                        `;
+                        grid.appendChild(card);
+                    });
+                })
+                .catch(err => showAlert('Error loading companies: ' + err.message, 'error'));
+        }
+
+        // Handle Form Submission: Check eligibility & generate score
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            // Gather skills
+            const selectedSkills = [];
+            document.querySelectorAll('.checkbox-grid input[type="checkbox"]:checked').forEach(chk => {
+                selectedSkills.push(chk.value);
+            });
+
+            // Gather other fields
+            const studentProfile = {
+                Name: document.getElementById('fullName').value.trim(),
+                Branch: document.getElementById('branch').value,
+                GraduationYear: parseInt(document.getElementById('gradYear').value),
+                CGPA: parseFloat(document.getElementById('cgpa').value),
+                TenPercent: parseFloat(document.getElementById('tenPercent').value),
+                TwelvePercent: parseFloat(document.getElementById('twelvePercent').value),
+                ActiveBacklogs: document.querySelector('input[name="backlogs"]:checked').value,
+                Projects: parseInt(document.getElementById('projectsCount').value),
+                Internship: document.querySelector('input[name="internship"]:checked').value,
+                Skills: selectedSkills
+            };
+
+            // Post assessment to backend
+            fetch('/api/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(studentProfile)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    showAlert(data.error, 'error');
+                    return;
+                }
+                
+                currentStudentData = data;
+                
+                // Update Dashboard KPI cards
+                document.getElementById('student-badge').innerText = `👤 ${data.student.Name}`;
+                document.getElementById('kpi-score').innerText = `${data.score.total} / 100`;
+                
+                const totalComp = data.eligible.length + data.ineligible.length;
+                document.getElementById('kpi-eligible').innerText = `${data.eligible.length} / ${totalComp}`;
+                document.getElementById('kpi-eligible-sub').innerText = `Eligible for ${data.eligible.length} companies`;
+                
+                const readinessVal = totalComp > 0 ? (data.eligible.length / totalComp * 100) : 0;
+                document.getElementById('kpi-readiness').innerText = `${readinessVal.toFixed(1)}%`;
+                document.getElementById('kpi-readiness-sub').innerText = getScoreRatingText(data.score.total);
+                
+                // Render charts in dashboard
+                document.getElementById('chart-eligibility').src = `data:image/png;base64,${data.charts.eligibility}`;
+                document.getElementById('chart-score').src = `data:image/png;base64,${data.charts.score}`;
+                document.getElementById('chart-peers').src = `data:image/png;base64,${data.charts.peers}`;
+                
+                document.getElementById('dashboard-placeholder').style.display = 'none';
+                document.getElementById('active-charts-container').style.display = 'grid';
+                
+                // Render immediate assessment result cards inside the assessment tab
+                renderFormAssessmentResults(data.eligible, data.ineligible);
+                
+                // Fill recommendations tab
+                renderRecommendations(data.recommendations, data.report);
+                
+                // Automatically save student data to database
+                saveStudentToDB(studentProfile, data.score.total, readinessVal);
+                
+                showAlert('Assessment complete! Metrics saved and analytics updated.');
+            })
+            .catch(err => showAlert('Calculation failed: ' + err.message, 'error'));
+        }
+
+        // Render assessment results under the form
+        function renderFormAssessmentResults(eligible, ineligible) {
+            const container = document.getElementById('form-results-panel');
+            const grid = document.getElementById('form-results-grid');
+            grid.innerHTML = '';
+            
+            // Add eligible companies
+            eligible.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = 'company-card eligible';
+                card.innerHTML = `
+                    <div class="company-card-header">
+                        <span class="company-name">${comp.Company}</span>
+                        <span class="status-badge status-eligible">Eligible</span>
+                    </div>
+                    <ul class="company-details-list">
+                        <li><span>Min CGPA:</span> <strong>${comp.MinCGPA}</strong></li>
+                        <li><span>Backlogs:</span> <strong>${comp.MaxBacklogs}</strong></li>
+                        <li><span>Required Projects:</span> <strong>${comp.MinProjects}</strong></li>
+                        <li><span>Skills Needed:</span> <strong>${comp.RequiredSkills}</strong></li>
+                    </ul>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Add ineligible companies
+            ineligible.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = 'company-card ineligible';
+                
+                let reasonsHtml = '';
+                comp.Reasons.forEach(reason => {
+                    reasonsHtml += `<div>❌ <span>${reason}</span></div>`;
+                });
+
+                card.innerHTML = `
+                    <div class="company-card-header">
+                        <span class="company-name">${comp.Company}</span>
+                        <span class="status-badge status-ineligible">Ineligible</span>
+                    </div>
+                    <ul class="company-details-list">
+                        <li><span>Min CGPA:</span> <strong>${comp.MinCGPA}</strong></li>
+                        <li><span>Backlogs:</span> <strong>${comp.MaxBacklogs}</strong></li>
+                        <li><span>Required Projects:</span> <strong>${comp.MinProjects}</strong></li>
+                    </ul>
+                    <div class="rejection-reasons">
+                        <strong>Rejection Reasons:</strong>
+                        ${reasonsHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            container.style.display = 'block';
+            // Smooth scroll down to results
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Render Recommendation checklist cards and report textarea
+        function renderRecommendations(recs, reportText) {
+            document.getElementById('recs-placeholder').style.display = 'none';
+            document.getElementById('recs-container').style.display = 'block';
+            
+            // Improvements
+            const impList = document.getElementById('rec-improvements');
+            impList.innerHTML = '';
+            if (recs.improvements && recs.improvements.length > 0) {
+                recs.improvements.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerText = item;
+                    impList.appendChild(li);
+                });
+            } else {
+                impList.innerHTML = '<li>✔ All criteria satisfied! Focus on keeping core grades consistent.</li>';
+            }
+
+            // Skills to Learn
+            const skillList = document.getElementById('rec-skills');
+            skillList.innerHTML = '';
+            if (recs.skills_to_learn && recs.skills_to_learn.length > 0) {
+                recs.skills_to_learn.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerText = item;
+                    skillList.appendChild(li);
+                });
+            } else {
+                skillList.innerHTML = '<li>✔ No core technical skill gaps. Excellent job!</li>';
+            }
+
+            // Certifications
+            const certList = document.getElementById('rec-certs');
+            certList.innerHTML = '';
+            if (recs.certifications && recs.certifications.length > 0) {
+                recs.certifications.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerText = item;
+                    certList.appendChild(li);
+                });
+            } else {
+                certList.innerHTML = '<li>✔ Resume is strong. General domain certs recommended.</li>';
+            }
+
+            // Report Box
+            document.getElementById('report-view-box').value = reportText;
+        }
+
+        // Save student records via REST API
+        function saveStudentToDB(studentProfile, score, readiness) {
+            const payload = {
+                ...studentProfile,
+                EmployabilityScore: score,
+                ReadinessPercentage: readiness
+            };
+            
+            fetch('/api/students', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) console.error("Save error:", data.error);
+            })
+            .catch(err => console.error("Database save failed:", err));
+        }
+
+        // Load all saved students from CSV database
+        function loadStudentDirectory() {
+            fetch('/api/students')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('student-table-body');
+                    tbody.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-muted);">No records found in the database. Run an assessment to create one.</td></tr>`;
+                        return;
+                    }
+
+                    data.forEach(std => {
+                        const tr = document.createElement('tr');
+                        
+                        // Score styling badge
+                        let scoreBadgeClass = 'badge-red';
+                        if (std.EmployabilityScore >= 80) scoreBadgeClass = 'badge-green';
+                        else if (std.EmployabilityScore >= 60) scoreBadgeClass = 'badge-yellow';
+                        
+                        // Skills parse count
+                        let skillsArr = [];
+                        if (std.Skills) {
+                            skillsArr = String(std.Skills).split(',').filter(s => s.trim().length > 0);
+                        }
+                        
+                        tr.innerHTML = `
+                            <td style="font-weight: 600;">${std.Name}</td>
+                            <td>${std.Branch}</td>
+                            <td>${parseFloat(std.CGPA).toFixed(2)}</td>
+                            <td>${std.ActiveBacklogs}</td>
+                            <td>${skillsArr.length} skills</td>
+                            <td>${std.Projects}</td>
+                            <td>${std.Internship}</td>
+                            <td><span class="score-indicator-badge ${scoreBadgeClass}">${std.EmployabilityScore}</span></td>
+                            <td style="font-weight: 600;">${parseFloat(std.ReadinessPercentage).toFixed(1)}%</td>
+                            <td>
+                                <button class="btn-table" onclick='loadProfileToForm(${JSON.stringify(std).replace(/'/g, "&apos;")})'>Load Profile</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(err => showAlert('Error loading student directory: ' + err.message, 'error'));
+        }
+
+        // Load selected profile back to the form and auto-submit
+        function loadProfileToForm(student) {
+            // Fill normal text inputs
+            document.getElementById('fullName').value = student.Name;
+            document.getElementById('branch').value = student.Branch;
+            document.getElementById('gradYear').value = student.GraduationYear;
+            document.getElementById('cgpa').value = student.CGPA;
+            document.getElementById('tenPercent').value = student.TenPercent;
+            document.getElementById('twelvePercent').value = student.TwelvePercent;
+            document.getElementById('projectsCount').value = student.Projects;
+
+            // Radios
+            document.querySelectorAll('input[name="backlogs"]').forEach(r => {
+                r.checked = (r.value === student.ActiveBacklogs);
+            });
+            document.querySelectorAll('input[name="internship"]').forEach(r => {
+                r.checked = (r.value === student.Internship);
+            });
+
+            // Skills Checkboxes
+            let studentSkills = [];
+            if (student.Skills) {
+                studentSkills = String(student.Skills).split(',').map(s => s.trim());
+            }
+
+            document.querySelectorAll('.checkbox-grid input[type="checkbox"]').forEach(chk => {
+                const checked = studentSkills.includes(chk.value);
+                chk.checked = checked;
+                toggleCheckStyle(chk);
+            });
+
+            // Switch to form tab
+            switchTab('eligibility');
+            showAlert(`Profile loaded for ${student.Name}. Submit the form to run assessment.`);
+        }
+
+        // Trigger file download of the text report
+        function downloadPlacementReport() {
+            if (!currentStudentData) {
+                showAlert('No assessment loaded to download.', 'error');
+                return;
+            }
+            
+            const element = document.createElement('a');
+            const file = new Blob([currentStudentData.report], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = `Placement_Report_${currentStudentData.student.Name.replace(/\s+/g, '_')}.txt`;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        function getScoreRatingText(score) {
+            if (score >= 85) return "Excellent Readiness";
+            if (score >= 70) return "Good Readiness";
+            if (score >= 50) return "Average Readiness";
+            return "Needs Attention";
+        }
+    </script>
+</body>
+</html>

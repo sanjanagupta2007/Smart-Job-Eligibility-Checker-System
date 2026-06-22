@@ -1,0 +1,7 @@
+Company,MinCGPA,MaxBacklogs,MinProjects,RequiredSkills,SkillsOperator
+TCS,6.0,0,0,None,None
+Infosys,6.5,-1,0,"Java,Python",OR
+Accenture,7.0,-1,1,None,None
+Wipro,6.0,0,0,None,None
+Capgemini,6.5,-1,0,SQL,AND
+Cognizant,6.5,-1,1,None,None

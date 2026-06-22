@@ -1,0 +1,8 @@
+Name,Branch,GraduationYear,TenPercent,TwelvePercent,CGPA,ActiveBacklogs,Skills,Projects,Internship,EmployabilityScore,ReadinessPercentage
+Alice Smith,CSE,2026,92.5,88.0,8.2,No,"Python,SQL,Data Structures",2,Yes,83.0,100.0
+Bob Jones,ECE,2026,78.0,75.0,6.2,Yes,"Java,HTML/CSS",1,No,42.4,33.3
+Charlie Brown,IT,2025,85.0,80.0,7.1,No,"SQL,HTML/CSS,JavaScript,Data Structures",1,No,62.9,66.7
+Diana Prince,CSE,2026,95.0,91.5,8.8,No,"Java,Python,SQL,Data Structures,Machine Learning",3,Yes,95.0,100.0
+Sanjana Gupta,CSE,2028,90.5,80.0,8.6,No,"Python,Java,SQL,HTML/CSS",0,No,48.1,66.66666666666666
+Bhawana Gupta,CSE,2026,85.0,70.0,8.0,No,"Java,SQL,HTML/CSS",1,No,46.0,100.0
+Yash Gupta,IT,2026,90.0,70.0,8.0,No,"Data Structures,Python,HTML/CSS",0,No,44.0,50.0
