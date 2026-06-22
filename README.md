@@ -111,6 +111,4 @@ Open your web browser and go to:
 - **Projects (15 pts)**: 1 Project = 5 pts, 2 Projects = 10 pts, 3+ Projects = 15 pts
 - **Internships (15 pts)**: Yes = 15 pts, No = 0 pts
 
-git add .
-git commit -m "Updated README"
-git push
+Project updated by Sanjana Gupta.
